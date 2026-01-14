@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MayIdea 姓名學占卜</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-red: #c92a2a; /* Oriental Red */
+            --paper-bg: #fdfbf7; /* Rice Paper */
+            --ink-black: #2b2b2b;
+            --gold: #d4af37;
+            --wood: #3b5a25;
+            --fire: #e03131;
+            --earth: #a8782e;
+            --metal: #868e96;
+            --water: #1864ab;
+        }
+
+        body {
+            font-family: 'Noto Serif TC', serif;
+            background-color: #f4f4f4;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23dcdcdc' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            color: var(--ink-black);
+            min-height: 100vh;
+            padding-bottom: 50px;
+        }
+
+        .main-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* 標題區 */
+        .header-section {
+            text-align: center;
+            padding: 3rem 0;
+            background: linear-gradient(to bottom, var(--primary-red), #a61e1e);
+            color: #fff;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 3.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+        }
+
+        /* 輸入卡片 */
+        .input-card {
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 2rem;
+            border: 1px solid #e0e0e0;
+            position: relative;
+        }
+
+        .input-group-text {
+            background-color: var(--primary-red);
+            color: white;
+            border: none;
+        }
+
+        /* 筆畫輸入框微調 */
+        .stroke-input {
+            width: 80px !important;
+            text-align: center;
+            flex: none !important;
+        }
+
+        /* 結果展示區 */
+        .result-section {
+            display: none; /* Hidden by default */
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        /* 筆畫結構展示區 */
+        .stroke-breakdown-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 5px solid var(--ink-black);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .char-box {
+            display: inline-block;
+            text-align: center;
+            margin: 0 10px;
+            min-width: 60px;
+        }
+        .char-text {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-red);
+            font-family: 'Ma Shan Zheng', cursive;
+        }
+        .stroke-text {
+            font-size: 0.9rem;
+            color: #666;
+            background: #eee;
+            padding: 2px 8px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        /* 五格卡片 */
+        .grid-card {
+            background: var(--paper-bg);
+            border: 2px solid var(--ink-black);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            position: relative;
+            transition: transform 0.3s;
+            height: 100%; /* Equal height */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .grid-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .grid-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-bottom: 2px solid var(--primary-red);
+            display: inline-block;
+            margin-bottom: 10px;
+            padding-bottom: 2px;
+        }
+
+        .grid-number {
+            font-size: 2.5rem;
+            font-family: 'Ma Shan Zheng', cursive;
+            color: var(--primary-red);
+            line-height: 1;
+            margin: 10px 0;
+        }
+
+        .luck-badge {
+            font-size: 0.9rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+        .luck-大吉 { background-color: #c92a2a; border: 2px solid #ffd700; }
+        .luck-吉 { background-color: #e03131; }
+        .luck-半吉 { background-color: #fcc419; color: #333; }
+        .luck-凶 { background-color: #868e96; }
+        .luck-大凶 { background-color: #343a40; }
+
+        .note-text {
+            font-size: 0.9rem;
+            color: #555;
+            margin-top: 5px;
+            line-height: 1.4;
+            min-height: 2.8em; /* Reserve space for 2 lines */
+        }
+
+        /* 五行顏色 */
+        .wuxing-木 { color: var(--wood); font-weight: bold; }
+        .wuxing-火 { color: var(--fire); font-weight: bold; }
+        .wuxing-土 { color: var(--earth); font-weight: bold; }
+        .wuxing-金 { color: var(--metal); font-weight: bold; }
+        .wuxing-水 { color: var(--water); font-weight: bold; }
+
+        /* 三才配置圖 */
+        .sancai-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        .sancai-node {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        .sancai-arrow {
+            font-size: 1.5rem;
+            color: #ccc;
+        }
+
+        /* 深度分析與五行條圖 */
+        .analysis-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        .analysis-section-title {
+            font-weight: bold;
+            color: var(--ink-black);
+            border-left: 4px solid var(--primary-red);
+            padding-left: 10px;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        .analysis-content {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #444;
+        }
+        .progress-bar-container {
+            margin-bottom: 10px;
+        }
+        .progress {
+            height: 0.8rem;
+            border-radius: 50px;
+            background-color: #e9ecef;
+        }
+        .progress-bar {
+            background-color: var(--primary-red);
+        }
+        .badge-score-ok { background: rgba(25,135,84,.12); color: #198754; border: 1px solid rgba(25,135,84,.2); }
+        .badge-score-warn { background: rgba(255,193,7,.18); color: #b98500; border: 1px solid rgba(255,193,7,.2); }
+        .badge-score-bad { background: rgba(220,53,69,.12); color: #dc3545; border: 1px solid rgba(220,53,69,.2); }
+
+        .btn-analyze {
+            background-color: var(--ink-black);
+            color: var(--gold);
+            font-size: 1.2rem;
+            padding: 10px 40px;
+            border: 2px solid var(--gold);
+            transition: all 0.3s;
+        }
+        .btn-analyze:hover {
+            background-color: var(--gold);
+            color: var(--ink-black);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-section">
+        <div class="container">
+            <div class="header-title">MayIdea 姓名學占卜</div>
+            <p class="mt-2 fs-5 opacity-75">五格剖象．三才配置．深度運勢</p>
+        </div>
+    </div>
+
+    <div class="main-container container">
+        
+        <!-- Input Form -->
+        <div class="input-card mb-5">
+            <h4 class="text-center mb-4 fw-bold" style="color: var(--ink-black);">
+                <i class="fas fa-pen-nib me-2"></i>輸入姓名
+            </h4>
+            
+            <form id="nameForm">
+                <div class="row g-3 justify-content-center">
+                    <!-- 姓氏 -->
+                    <div class="col-md-5">
+                        <label class="form-label text-muted small">姓氏 (可複姓)</label>
+                        <div class="input-group">
+                            <span class="input-group-text">姓</span>
+                            <input type="text" class="form-control form-control-lg" id="surname" placeholder="例：王" required>
+                            <!-- 筆畫輸入 (自動帶入但可修改) -->
+                            <input type="number" class="form-control stroke-input" id="surnameStroke1" placeholder="畫" min="1" title="第一字筆畫">
+                            <input type="number" class="form-control stroke-input" id="surnameStroke2" placeholder="畫" min="1" style="display:none;" title="第二字筆畫">
+                        </div>
+                    </div>
+
+                    <!-- 名字 -->
+                    <div class="col-md-5">
+                        <label class="form-label text-muted small">名字</label>
+                        <div class="input-group">
+                            <span class="input-group-text">名</span>
+                            <input type="text" class="form-control form-control-lg" id="firstname" placeholder="例：大明" required>
+                            <!-- 筆畫輸入 -->
+                            <input type="number" class="form-control stroke-input" id="nameStroke1" placeholder="畫" min="1" title="第一字筆畫">
+                            <input type="number" class="form-control stroke-input" id="nameStroke2" placeholder="畫" min="1" style="display:none;" title="第二字筆畫">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-3 mb-4">
+                    <small class="text-danger d-block mb-1"><i class="fas fa-exclamation-circle"></i> 系統會自動估算常用字筆畫。</small>
+                    <small class="text-muted">若估算不準或字庫無資料（顯示為空），請務必<strong>手動輸入</strong>，以確保符合「康熙字典」筆畫數。</small>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-analyze rounded-pill">
+                        開始分析
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Result Section -->
+        <div id="resultSection" class="result-section">
+            
+            <!-- 0. Header with Breakdown & Score -->
+            <div class="row mb-4">
+                <div class="col-md-7 mb-3 mb-md-0">
+                    <div class="stroke-breakdown-card text-center h-100 d-flex flex-column justify-content-center">
+                        <h5 class="fw-bold mb-3 text-muted">姓名筆畫結構</h5>
+                        <div id="strokeBreakdownContent">
+                            <!-- JS will fill this -->
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="analysis-card h-100 d-flex flex-column justify-content-center align-items-center">
+                        <h5 class="fw-bold mb-3 text-muted">綜合評分</h5>
+                        <div id="scoreBadge" class="d-flex flex-column gap-2 w-100">
+                             <!-- JS will fill this -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 1. 五格總覽 -->
+            <div class="row mb-4">
+                <div class="col-12 text-center mb-3">
+                    <h3 class="fw-bold border-bottom d-inline-block pb-2">五格吉凶分析</h3>
+                </div>
+
+                <!-- 天格 -->
+                <div class="col-md-4 col-lg-2 mb-3">
+                    <div class="grid-card text-center">
+                        <div>
+                            <div class="grid-title">天格</div>
+                            <div class="text-muted small mb-1">(祖運)</div>
+                            <div class="grid-number" id="tianGeNum">--</div>
+                        </div>
+                        <div>
+                            <div class="mt-2" id="tianGeResult">--</div>
+                            <div class="mt-2 text-start px-2 note-text" id="tianGeNote">--</div>
+                            <div class="small mt-2 pt-2 border-top text-muted" id="tianGeWuXing">--</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 人格 (Core) -->
+                <div class="col-md-4 col-lg-4 mb-3">
+                    <div class="grid-card text-center" style="border-color: var(--primary-red); background: #fff5f5;">
+                        <div>
+                            <div class="grid-title text-danger">人格 (核心)</div>
+                            <div class="text-muted small mb-1">(主運/性格)</div>
+                            <div class="grid-number" style="font-size: 3.5rem;" id="renGeNum">--</div>
+                        </div>
+                        <div>
+                            <div class="mt-2 fs-5 fw-bold" id="renGeResult">--</div>
+                            <div class="mt-2 text-center px-3 note-text fw-bold text-dark" id="renGeNote">--</div>
+                            <div class="mt-2 pt-2 border-top fs-5" id="renGeWuXing">--</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 地格 -->
+                <div class="col-md-4 col-lg-2 mb-3">
+                    <div class="grid-card text-center">
+                        <div>
+                            <div class="grid-title">地格</div>
+                            <div class="text-muted small mb-1">(前運/家庭)</div>
+                            <div class="grid-number" id="diGeNum">--</div>
+                        </div>
+                        <div>
+                            <div class="mt-2" id="diGeResult">--</div>
+                            <div class="mt-2 text-start px-2 note-text" id="diGeNote">--</div>
+                            <div class="small mt-2 pt-2 border-top text-muted" id="diGeWuXing">--</div>
+                        </div>
+                    </div>
+                </div>
+
+                 <!-- 外格 -->
+                 <div class="col-md-6 col-lg-2 mb-3">
+                    <div class="grid-card text-center">
+                        <div>
+                            <div class="grid-title">外格</div>
+                            <div class="text-muted small mb-1">(社交/外緣)</div>
+                            <div class="grid-number" id="waiGeNum">--</div>
+                        </div>
+                        <div>
+                            <div class="mt-2" id="waiGeResult">--</div>
+                            <div class="mt-2 text-start px-2 note-text" id="waiGeNote">--</div>
+                            <div class="small mt-2 pt-2 border-top text-muted" id="waiGeWuXing">--</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 總格 -->
+                <div class="col-md-6 col-lg-2 mb-3">
+                    <div class="grid-card text-center">
+                        <div>
+                            <div class="grid-title">總格</div>
+                            <div class="text-muted small mb-1">(後運/總體)</div>
+                            <div class="grid-number" id="zongGeNum">--</div>
+                        </div>
+                        <div>
+                            <div class="mt-2" id="zongGeResult">--</div>
+                            <div class="mt-2 text-start px-2 note-text" id="zongGeNote">--</div>
+                            <div class="small mt-2 pt-2 border-top text-muted" id="zongGeWuXing">--</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. 三才與五行分布 -->
+            <div class="row mb-4">
+                <!-- 三才配置 -->
+                <div class="col-lg-6 mb-3">
+                    <div class="card border-0 shadow-sm p-4 h-100">
+                        <h4 class="text-center fw-bold mb-3">三才配置 (天-人-地)</h4>
+                        <div class="sancai-diagram" id="sancaiContainer">
+                            <!-- JS generates visual nodes here -->
+                        </div>
+                        <div class="mt-3 p-3 bg-light rounded text-center">
+                            <strong>配置解說：</strong>
+                            <span id="sancaiDesc">--</span>
+                            <div class="text-muted mt-2">（快速規則：相生/比和較順；相剋較費力）</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 五行分布 -->
+                <div class="col-lg-6 mb-3">
+                    <div class="analysis-card h-100">
+                        <h4 class="text-center fw-bold mb-3">五行分布</h4>
+                        <div id="wuxingBars">
+                            <!-- JS generates bars -->
+                        </div>
+                        <div class="small text-muted mt-3 text-center">
+                            (此分布基於五格數理的五行屬性統計)
+                        </div>
+                        <div class="small-note">
+                            <div class="fw-semibold mb-1">五行判斷（尾數）</div>
+                            <div>1、2=木；3、4=火；5、6=土；7、8=金；9、0=水</div>
+                            <div class="mt-2">
+                            <span class="fw-semibold">提醒：</span>不同流派對「81數理」文字解釋會有差異，本工具提供「偏主流」的簡化版判讀，適合做快速參考。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. 深度分析 (Personality, Career, etc.) -->
+            <div class="row mb-4 justify-content-center">
+                <div class="col-12">
+                    <div class="analysis-card">
+                        <h4 class="text-center fw-bold mb-4">運勢深度解析</h4>
+                        <div id="lifeExplain" class="analysis-content">
+                            <!-- JS will fill this -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <footer class="text-center p-4 text-sm">
+         <p>© 2026 MayIdea 姓名學占卜 v20260114 | 僅供娛樂與心靈參考</p>        
+    </footer>
+
+    
+    <script>
+        // --- 1. Basic Data (81 Numbers & Wu Xing) ---
+        
+        // Detailed 81 Ling Dong numbers (Luck + Note) from User
+        const luckMap = {
+            1: {luck: "吉", note: "獨立開創，適合帶頭起步。"},
+            2: {luck: "半吉", note: "合作敏感，易受環境影響。"},
+            3: {luck: "吉", note: "活力展現，做事有衝勁與表達力。"},
+            4: {luck: "凶", note: "阻力較多，需耐心與紀律。"},
+            5: {luck: "吉", note: "平衡穩健，貴人與資源較易到位。"},
+            6: {luck: "大吉", note: "權威順利，事業推進力強。"},
+            7: {luck: "吉", note: "意志堅定，適合專業路線。"},
+            8: {luck: "吉", note: "踏實累積，屬於越做越穩型。"},
+            9: {luck: "凶", note: "波折較多，情緒與起伏要控管。"},
+            10: {luck: "大凶", note: "空轉感重，易迷惘或反覆。"},
+            11: {luck: "大吉", note: "順勢發展，人脈與機會都不錯。"},
+            12: {luck: "凶", note: "薄弱多阻，需要外力扶持。"},
+            13: {luck: "大吉", note: "才華外顯，適合創意、專業、領導。"},
+            14: {luck: "大凶", note: "耗損偏重，易破財或壓力過量。"},
+            15: {luck: "大吉", note: "福氣圓融，適合穩定成長。"},
+            16: {luck: "大吉", note: "貴人強，遇事較常逢凶化吉。"},
+            17: {luck: "吉", note: "剛強進取，注意別過度硬碰硬。"},
+            18: {luck: "吉", note: "權勢與成就感強，適合衝業績。"},
+            19: {luck: "凶", note: "多變動與考驗，需要風險控管。"},
+            20: {luck: "大凶", note: "不穩與落空感，需加強執行與落地。"},
+            21: {luck: "吉", note: "領導企圖強，適合獨當一面。"},
+            22: {luck: "凶", note: "孤獨感與阻礙，重視關係經營。"},
+            23: {luck: "大吉", note: "旭日東昇，衝刺型強運。"},
+            24: {luck: "大吉", note: "財庫佳，常見「越做越有」的走勢。"},
+            25: {luck: "吉", note: "聰明果斷，適合策略與管理。"},
+            26: {luck: "凶", note: "波折多，容易先苦後更苦；需規劃。"},
+            27: {luck: "半吉", note: "起伏大，靠自律可轉佳。"},
+            28: {luck: "大凶", note: "風險高，常見阻礙與損耗。"},
+            29: {luck: "吉", note: "智謀型成功，適合專案與談判。"},
+            30: {luck: "半吉", note: "浮沉不定，重在定位與長期策略。"},
+            31: {luck: "大吉", note: "德才兼備，名聲與成果可累積。"},
+            32: {luck: "大吉", note: "機緣佳，合作與資源整合能力強。"},
+            33: {luck: "大吉", note: "富貴昌隆，事業擴張力強。"},
+            34: {luck: "大凶", note: "阻滯破敗，宜保守與避險。"},
+            35: {luck: "吉", note: "安定踏實，適合長線經營。"},
+            36: {luck: "凶", note: "壓力與波折，注意健康與節奏。"},
+            37: {luck: "吉", note: "權威執行力強，適合帶團隊。"},
+            38: {luck: "半吉", note: "勞心勞力型，靠耐性換成果。"},
+            39: {luck: "吉", note: "富貴順利，口碑與資源不錯。"},
+            40: {luck: "大凶", note: "虛耗與落空感，避免投機與躁進。"},
+            41: {luck: "吉", note: "德望型成就，適合專業品牌。"},
+            42: {luck: "半吉", note: "勞心型，重視流程與團隊支援。"},
+            43: {luck: "凶", note: "不安多變，情緒與人際要修練。"},
+            44: {luck: "凶", note: "勞苦偏重，需調整模式與資源。"},
+            45: {luck: "大吉", note: "順遂昌盛，帶來穩健的擴張。"},
+            46: {luck: "凶", note: "波折較多，先守再攻較佳。"},
+            47: {luck: "吉", note: "開花結果，屬於後發上升運。"},
+            48: {luck: "吉", note: "智謀成功，適合技術與管理並進。"},
+            49: {luck: "凶", note: "變局多，宜保守與分散風險。"},
+            50: {luck: "半吉", note: "孤獨感較強，需靠團隊補足。"},
+            51: {luck: "半吉", note: "盛衰交替，重視第二曲線。"},
+            52: {luck: "吉", note: "先苦後甜，耐心可得成果。"},
+            53: {luck: "半吉", note: "多變動，適合彈性職涯。"},
+            54: {luck: "凶", note: "起伏與破耗，避免硬扛。"},
+            55: {luck: "半吉", note: "外表光鮮，需強化內功與落地。"},
+            56: {luck: "凶", note: "勞苦波折，注意健康與關係成本。"},
+            57: {luck: "吉", note: "努力有成，適合長期耕耘。"},
+            58: {luck: "半吉", note: "先難後易，關鍵在持續優化。"},
+            59: {luck: "凶", note: "不穩與耗損，宜穩健規劃。"},
+            60: {luck: "大凶", note: "空虛落空，需重建目標與紀律。"},
+            61: {luck: "吉", note: "名利可收，適合穩健擴大影響力。"},
+            62: {luck: "凶", note: "衰弱感，避免高槓桿與過勞。"},
+            63: {luck: "吉", note: "富貴榮達，擅長整合與完成。"},
+            64: {luck: "凶", note: "勞苦多阻，宜找對賽道與夥伴。"},
+            65: {luck: "吉", note: "長壽吉祥，屬於穩中求勝。"},
+            66: {luck: "凶", note: "失敗與阻滯，避免硬衝。"},
+            67: {luck: "吉", note: "成功昌隆，適合掌權與管理。"},
+            68: {luck: "吉", note: "財運成長，重視資產配置與紀律。"},
+            69: {luck: "凶", note: "動盪變局，宜降低風險暴露。"},
+            70: {luck: "凶", note: "虛弱不穩，需補強基礎與支持系統。"},
+            71: {luck: "半吉", note: "波折中見轉機，靠策略與耐心。"},
+            72: {luck: "凶", note: "勞苦多變，避免單打獨鬥。"},
+            73: {luck: "半吉", note: "不安中可成，靠專業與制度化。"},
+            74: {luck: "凶", note: "破敗之象，宜保守與修復。"},
+            75: {luck: "半吉", note: "勞心型成果，適合穩健慢攻。"},
+            76: {luck: "凶", note: "波折偏重，先止損再成長。"},
+            77: {luck: "半吉", note: "努力型運勢，越自律越好。"},
+            78: {luck: "半吉", note: "勞碌奔波，注意節奏與健康。"},
+            79: {luck: "凶", note: "多難多變，需強化風險控管。"},
+            80: {luck: "大凶", note: "空耗感強，避免投機與情緒決策。"},
+            81: {luck: "大吉", note: "圓滿收成，能做大局整合。"}
+        };
+
+        function getLuckData(num) {
+            const n = num > 81 ? num % 81 || 81 : num;
+            return luckMap[n] || {luck: "平", note: "運勢平穩，需靠努力開創。"};
+        }
+
+        function getWuXing(num) {
+            const n = num % 10;
+            if (n === 1 || n === 2) return { ele: "木", color: "var(--wood)" };
+            if (n === 3 || n === 4) return { ele: "火", color: "var(--fire)" };
+            if (n === 5 || n === 6) return { ele: "土", color: "var(--earth)" };
+            if (n === 7 || n === 8) return { ele: "金", color: "var(--metal)" };
+            return { ele: "水", color: "var(--water)" };
+        }
+
+        function getRelation(ele1, ele2) {
+            const map = {
+                "木": { "木": "比旺", "火": "相生", "土": "相剋", "金": "被剋", "水": "被生" },
+                "火": { "木": "被生", "火": "比旺", "土": "相生", "金": "相剋", "水": "被剋" },
+                "土": { "木": "被剋", "火": "被生", "土": "比旺", "金": "相生", "水": "相剋" },
+                "金": { "木": "相剋", "火": "被剋", "土": "被生", "金": "比旺", "水": "相生" },
+                "水": { "木": "相生", "火": "相剋", "土": "被剋", "金": "被生", "水": "比旺" }
+            };
+            return map[ele1][ele2];
+        }
+
+        // --- 2. User Interface Logic ---
+
+        const strokeDict = {
+            // ===== 常見姓氏（你提供的 + 補齊一些）=====
+            "王": 4, "李": 7, "張": 11, "劉": 15, "陳": 16, "楊": 13, "黃": 12, "吳": 7, "趙": 14, "周": 8,
+            "徐": 10, "孫": 10, "馬": 10, "朱": 6, "胡": 9, "郭": 15, "何": 7, "高": 10, "林": 8, "羅": 20,
+            "鄭": 19, "梁": 11, "謝": 17, "宋": 7, "唐": 10, "許": 11, "韓": 17, "馮": 12, "鄧": 19, "曹": 10,
+            "彭": 12, "曾": 12, "蕭": 18, "田": 5, "董": 15, "袁": 10, "潘": 16, "于": 3, "蔣": 17, "蔡": 17,
+            "余": 7, "杜": 7, "葉": 15, "程": 12, "蘇": 22, "魏": 18, "呂": 7, "丁": 2, "任": 6, "沈": 8,
+            "姚": 9, "盧": 16, "姜": 9, "崔": 11, "鍾": 17, "譚": 19, "陸": 16, "汪": 8, "范": 11, "金": 8,
+            "石": 5, "廖": 14, "賈": 13, "夏": 10, "韋": 9, "傅": 12, "方": 4, "白": 5, "鄒": 17, "孟": 8,
+            "熊": 14, "秦": 10, "邱": 12, "江": 7, "尹": 4, "薛": 19, "閻": 16, "段": 9, "雷": 13, "侯": 9,
+            "龍": 16, "史": 5, "陶": 16, "黎": 15, "賀": 12, "顧": 21, "毛": 4, "郝": 14, "龔": 22, "邵": 12,
+            "萬": 15, "錢": 16, "嚴": 20, "賴": 16, "覃": 12, "洪": 10, "武": 8, "莫": 11, "孔": 4, "湯": 13,
+            "歐": 15, "歐陽": 0, // 複姓請用兩字拆開計算（此處留示意）
+            "戴": 17, "龐": 19, "邱": 12, "邢": 11, "詹": 13, "溫": 13, "柏": 9, "鐘": 17, "施": 9, "章": 11,
+            "呂": 7, "簡": 18, "鄺": 22, "蘭": 21, "關": 19, "巫": 7, "卓": 8, "伍": 6, "賈": 13, "邵": 12,
+
+            // ===== 你提供的示範字 =====
+            "大": 3, "小": 3, "天": 4, "宏": 7, "怡": 9, "雅": 12, "婷": 12, "偉": 11, "志": 7, "豪": 14,
+
+            // ===== 常用名用字（A~Z 常見）=====
+            "一": 1, "乙": 1, "二": 2, "十": 2, "人": 2, "入": 2, "八": 2, "力": 2, "刀": 2, "又": 2,
+            "三": 3, "上": 3, "下": 3, "口": 3, "土": 3, "夕": 3, "子": 3, "山": 3, "川": 3, "工": 3,
+            "才": 3, "女": 3, "也": 3, "于": 3, "亡": 3, "凡": 3, "久": 3, "丸": 3, "及": 3, "弓": 3,
+            "四": 5, "五": 4, "六": 4, "七": 2, "九": 2, "之": 3, "也": 3, "中": 4, "元": 4, "文": 4,
+            "方": 4, "心": 4, "日": 4, "月": 4, "木": 4, "水": 4, "火": 4, "牛": 4, "犬": 4, "王": 4,
+            "玉": 5, "石": 5, "田": 5, "白": 5, "生": 5, "本": 5, "末": 5, "正": 5, "民": 5, "永": 5,
+            "平": 5, "以": 5, "兄": 5, "再": 6, "在": 6, "有": 6, "名": 6, "同": 6, "向": 6, "年": 6,
+            "好": 6, "如": 6, "行": 6, "西": 6, "衣": 6, "安": 6, "成": 6, "合": 6, "全": 6, "光": 6,
+            "先": 6, "共": 6, "再": 6, "早": 6, "地": 6, "多": 6, "百": 6, "至": 6, "自": 6, "式": 6,
+            "里": 7, "志": 7, "良": 7, "利": 7, "言": 7, "見": 7, "足": 7, "身": 7, "車": 7, "辛": 7,
+            "邦": 7, "辰": 7, "君": 7, "孝": 7, "男": 7, "秀": 7, "妍": 7, "妙": 7, "含": 7, "呈": 7,
+            "佳": 8, "明": 8, "東": 8, "欣": 8, "忠": 8, "宜": 8, "宗": 8, "雨": 8, "林": 8, "青": 8,
+            "英": 8, "念": 8, "岳": 8, "岱": 8, "承": 8, "昆": 8, "昌": 8, "昇": 8, "尚": 8, "和": 8,
+            "金": 8, "長": 8, "采": 8, "孟": 8, "武": 8, "宗": 8, "昌": 8, "尚": 8, "朋": 8, "松": 8,
+            "春": 9, "秋": 9, "香": 9, "音": 9, "美": 9, "玲": 9, "思": 9, "怡": 9, "柔": 9, "信": 9,
+            "建": 9, "政": 9, "重": 9, "俊": 9, "亮": 9, "星": 9, "南": 9, "勇": 9, "品": 9, "皇": 9,
+            "家": 10, "真": 10, "哲": 10, "倫": 10, "偉": 11, "浩": 10, "航": 10, "恩": 10, "桂": 10, "桐": 10,
+            "庭": 10, "峰": 10, "倩": 10, "娜": 10, "珊": 10, "玲": 9, "珠": 10, "珮": 10, "純": 10, "紋": 10,
+            "雅": 12, "婷": 12, "翔": 12, "凱": 12, "程": 12, "博": 12, "智": 12, "傑": 12, "傑": 12, "惠": 12,
+            "媛": 12, "雯": 12, "婷": 12, "鈴": 13, "瑞": 13, "靖": 13, "筠": 13, "勤": 13, "新": 13, "楠": 13,
+            "榮": 14, "嘉": 14, "豪": 14, "誠": 13, "德": 15, "慧": 15, "慶": 15, "潔": 15, "穎": 16, "璇": 16,
+            "蓉": 16, "璟": 16, "璐": 17, "耀": 20, "馨": 20, "鑫": 24,
+
+            // ===== 超常用詞彙字（補到 500+，多數姓名也常用）=====
+            "國": 11, "家": 10, "學": 16, "校": 10, "生": 5, "師": 10, "友": 4, "愛": 13, "和": 8, "樂": 15,
+            "福": 13, "德": 15, "義": 13, "仁": 4, "禮": 18, "智": 12, "信": 9, "勇": 9, "善": 12,
+            "富": 12, "貴": 12, "財": 10, "運": 13, "興": 16, "旺": 8, "達": 16, "成": 6, "功": 5, "名": 6,
+            "利": 7, "安": 6, "康": 11, "健": 11, "順": 12, "祥": 11, "瑞": 13, "昌": 8, "盛": 12, "隆": 16,
+            "新": 13, "發": 12, "展": 10, "進": 11, "步": 7, "飛": 9, "翔": 12, "遠": 13, "宏": 7, "偉": 11,
+            "志": 7, "心": 4, "念": 8, "思": 9, "想": 13, "夢": 14, "望": 11, "願": 14, "真": 10, "誠": 13,
+            "正": 5, "直": 8, "清": 11, "潔": 15, "淨": 11, "平": 5, "穩": 19, "定": 8, "和": 8, "合": 6,
+            "立": 5, "志": 7, "業": 13, "事": 8, "工": 3, "作": 7, "職": 18, "務": 11, "企": 6, "管": 14,
+            "理": 11, "系": 7, "統": 12, "資": 13, "訊": 10, "安": 6, "全": 6, "風": 9, "險": 16, "控": 11,
+            "制": 8, "法": 8, "規": 11, "範": 15, "準": 13, "標": 15, "策": 12, "略": 11, "計": 9, "畫": 12,
+            "目": 5, "標": 15, "成": 6, "長": 8, "學": 16, "習": 11, "知": 8, "識": 19, "能": 10, "力": 2,
+            "才": 3, "華": 10, "英": 8, "傑": 12, "俊": 9, "賢": 15, "良": 7, "德": 15, "慧": 15, "敏": 11,
+            "勤": 13, "毅": 15, "堅": 11, "強": 12, "勇": 9, "敢": 12, "剛": 10, "柔": 9, "謙": 17, "讓": 24,
+            "敬": 13, "孝": 7, "忠": 8, "義": 13, "廉": 13, "恥": 10, "恩": 10, "惠": 12, "慈": 13, "愛": 13,
+
+            "天": 4, "地": 6, "人": 2, "日": 4, "月": 4, "星": 9, "光": 6, "明": 8, "亮": 9, "晨": 11,
+            "春": 9, "夏": 10, "秋": 9, "冬": 5, "風": 9, "雨": 8, "雲": 12, "雷": 13, "電": 13, "雪": 11,
+            "山": 3, "海": 10, "河": 8, "江": 7, "湖": 12, "泉": 9, "源": 14, "溪": 13, "波": 8, "浪": 10,
+            "木": 4, "林": 8, "森": 12, "松": 8, "柏": 9, "杉": 7, "桐": 10, "楓": 13, "柳": 9, "梅": 11,
+            "蘭": 21, "竹": 6, "花": 7, "草": 9, "葉": 15, "果": 8, "禾": 5, "米": 6, "田": 5, "石": 5,
+
+            "金": 8, "銀": 14, "玉": 5, "珠": 10, "寶": 20, "晶": 12, "瑩": 15, "瑋": 13, "瑜": 14, "璟": 16,
+            "文": 4, "武": 8, "禮": 18, "樂": 15, "書": 10, "畫": 12, "詩": 13, "詞": 12, "歌": 14, "舞": 14,
+            "音": 9, "律": 9, "曲": 6, "藝": 21, "美": 9, "雅": 12, "韻": 19, "涵": 12, "瀚": 19, "澤": 16,
+            "宇": 6, "宙": 8, "宸": 10, "昊": 8, "軒": 10, "晨": 11, "昕": 8, "晟": 10, "曦": 20, "曜": 18,
+
+            "子": 3, "女": 3, "男": 7, "父": 4, "母": 5, "兄": 5, "弟": 7, "姊": 8, "妹": 8, "妻": 8,
+            "夫": 4, "兒": 8, "孫": 10, "祖": 10, "宗": 8, "家": 10, "庭": 10, "室": 9, "門": 8, "戶": 4,
+
+            "中": 4, "台": 5, "臺": 14, "北": 5, "南": 9, "東": 8, "西": 6, "中": 4, "華": 10, "民": 5,
+            "市": 5, "區": 11, "里": 7, "街": 12, "路": 13, "橋": 16, "站": 10, "車": 7, "港": 12, "機": 16,
+
+            "上": 3, "下": 3, "左": 5, "右": 5, "前": 9, "後": 9, "內": 4, "外": 5, "大": 3, "小": 3,
+            "高": 10, "低": 7, "長": 8, "短": 12, "早": 6, "晚": 11, "新": 13, "舊": 18, "多": 6, "少": 4,
+
+            "有": 6, "無": 12, "是": 9, "非": 8, "對": 14, "錯": 13, "真": 10, "假": 11, "好": 6, "壞": 19,
+            "快": 7, "慢": 14, "強": 12, "弱": 10, "熱": 15, "冷": 7, "乾": 11, "濕": 17, "明": 8, "暗": 13,
+
+            "吃": 6, "喝": 12, "睡": 13, "走": 7, "跑": 12, "看": 9, "聽": 22, "說": 14, "讀": 22, "寫": 15,
+            "做": 11, "想": 13, "學": 16, "教": 11, "問": 11, "答": 12, "開": 12, "關": 19, "進": 11, "出": 5,
+            "來": 8, "去": 5, "回": 6, "到": 8, "在": 6, "住": 7, "行": 6, "坐": 7, "站": 10, "等": 12,
+            "買": 12, "賣": 15, "借": 10, "還": 16, "給": 12, "拿": 10, "放": 8, "用": 5, "找": 7, "見": 7,
+            "心": 4, "情": 12, "意": 13, "志": 7, "愛": 13, "恨": 10, "喜": 12, "怒": 9, "哀": 9, "樂": 15,
+            "笑": 10, "哭": 10, "痛": 12, "福": 13, "禍": 13, "吉": 6, "凶": 4, "安": 6, "危": 6, "憂": 15,
+            "身": 7, "體": 23, "病": 10, "醫": 18, "藥": 16, "護": 20, "療": 17, "養": 15, "睡": 13, "食": 9, "飲": 12, "動": 11,
+            "山": 3, "水": 4, "火": 4, "土": 3, "風": 9, "雨": 8, "雷": 13, "雲": 12, "海": 10, "天": 4,
+            // ===== 補齊常用名用字（常見姓名 2~3 字）=====
+            "承": 8, "昱": 9, "昇": 8, "昀": 8, "昕": 8, "昊": 8, "昶": 9, "晏": 10, "晟": 10, "晨": 11,
+            "柏": 9, "松": 8, "梓": 11, "桓": 10, "桔": 10, "桐": 10, "森": 12, "楷": 13, "楠": 13, "榕": 14,
+            "欣": 8, "怡": 9, "恬": 9, "恩": 10, "恆": 10, "悅": 11, "慧": 15, 
+            "敏": 11, "惠": 12, "淑": 12, "涵": 12, "淇": 11, "淳": 11, "清": 11, "潔": 15, "瑋": 13, "瑜": 14,
+            "珮": 10, "珊": 10, "琪": 12, "琳": 12, "琦": 12, "瑄": 13, "璇": 16, "璐": 17, "穎": 16, "馨": 20,
+            "妍": 7, "妙": 7, "秀": 7, "姿": 9, "姍": 8, "娜": 10, "娟": 10, "婷": 12, "媛": 12, "婕": 11,
+            "婉": 11, "嫻": 15, "蓉": 16, "薇": 16, "萱": 15, "芸": 10, "芷": 7, "若": 11, "雅": 12, "雯": 12,
+            "晴": 12, "靜": 16, "靖": 13, "萍": 11, "蓁": 14, "茜": 9, "菁": 12, "菱": 11, "菲": 14, "筠": 13,
+            // ===== 常用字（補量，偏常見繁體）=====
+            "我": 7, "你": 7, "他": 5, "她": 6, "們": 10, "的": 8, "了": 2, "在": 6, "是": 9, "不": 4,
+            "有": 6, "要": 9, "會": 13, "可": 5, "也": 3, "就": 12, "都": 11, "很": 9, "還": 16, "和": 8,
+            "與": 14, "或": 8, "而": 6, "但": 7, "因": 6, "為": 9, 
+            "這": 13, "那": 7, "哪": 9, "誰": 15, "什": 4, "麼": 14, "怎": 9, "樣": 15, "時": 10, "間": 12,
+            "今": 4, "明": 8, "昨": 9, "年": 6, "月": 4, "日": 4, "週": 12, "天": 4, "早": 6, "晚": 11,
+            "上": 3, "下": 3, "中": 4, "內": 4, "外": 5, "前": 9, "後": 9, "左": 5, "右": 5, "邊": 18,
+            "東": 8, "西": 6, "南": 9, "北": 5, "城": 9, "市": 5, "區": 11, "鄉": 11, "村": 7, "路": 13,
+            "人": 2, "事": 8, "物": 8, "天": 4, "地": 6, "心": 4, "手": 4, "眼": 11, "耳": 6, "口": 3,
+            "頭": 16, "臉": 17, "腳": 15, "衣": 6, "食": 9, "住": 7, "行": 6, "用": 5, "買": 12, "賣": 15,
+            "錢": 16, "銀": 14, "金": 8, "卡": 5, "帳": 11, "單": 12, "票": 11, "價": 15, "費": 12, "稅": 12,
+            "大": 3, "小": 3, "多": 6, "少": 4, "長": 8, "短": 12, "高": 10, "低": 7, "新": 13, "舊": 18,
+            "好": 6, "壞": 19, "快": 7, "慢": 14, "強": 12, "弱": 10, "真": 10, "假": 11, "美": 9, "醜": 17,
+
+            // ===== 補字（再補一些常用繁體，讓字典更接近 500+）=====
+            "電": 13, "腦": 13, "網": 14, "站": 10, "頁": 9, "資": 13, "料": 10, "庫": 10, "雲": 12, "端": 14,
+            "系": 7, "統": 12, "平": 5, "台": 5, "臺": 14, "服": 8, "務": 11, "器": 16, "應": 17, "用": 5,
+            "程": 12, "式": 6, "開": 12, "發": 12, "測": 12, "試": 13, "版": 8, "本": 5, "更": 7, "新": 13,
+            "帳": 11, "號": 13, "密": 11, "碼": 15, "權": 22, "限": 9, "登": 12, "入": 2, "登": 12, "出": 5,
+            "備": 12, "份": 6, "還": 16, "原": 10, "復": 12, "紀": 9, "錄": 16, "報": 12, "表": 8, "單": 12,
+            "圖": 14, "檔": 21, "案": 10, "管": 14, "理": 11, "設": 11, "計": 9, "需": 14, "求": 7, "規": 11,
+            "格": 10, "說": 14, "明": 8, "文": 4, "字": 6, "語": 14, "言": 7, "翻": 18, "譯": 20, "問": 11,
+
+            // ===== 末尾再補一些常用字（避免常見名查不到）=====
+            "承": 8, "啟": 11, "景": 12, "昱": 9, "祐": 9, "祺": 12, "祈": 8, "宗": 8, "宥": 9, "宸": 10,
+            "冠": 9, "哲": 10, "銘": 14, "鈞": 12, "鈴": 13, "鋒": 15, "鎮": 18, "宏": 7, "博": 12, "睿": 14,
+            "維": 14, "緯": 15, "翰": 16, "曜": 18, "耀": 20, "彥": 9, "彬": 11, "翔": 12, "誠": 13, "諭": 16
+        };
+
+
+        function autoFillStrokes(char, inputId) {
+            if (strokeDict[char]) {
+                document.getElementById(inputId).value = strokeDict[char] ?? 0;
+            }
+        }
+
+        // Consolidated Input Listeners
+        function setupInputListeners(type) {
+            const inputId = type === 'surname' ? 'surname' : 'firstname';
+            const strokeBase = type === 'surname' ? 'surnameStroke' : 'nameStroke';
+
+            document.getElementById(inputId).addEventListener('input', function(e) {
+                const val = e.target.value;
+                const stroke2Input = document.getElementById(strokeBase + '2');
+
+                // Toggle visibility of 2nd input
+                if (val.length >= 2) {
+                    stroke2Input.style.display = 'inline-block';
+                } else {
+                    stroke2Input.style.display = 'none';
+                    stroke2Input.value = '';
+                }
+
+                // Attempt auto-fill
+                if (val[0]) autoFillStrokes(val[0], strokeBase + '1');
+                if (val[1]) autoFillStrokes(val[1], strokeBase + '2');
+            });
+        }
+
+        setupInputListeners('surname');
+        setupInputListeners('firstname');
+
+        // --- 3. Analysis Logic (Ported from name-fortune.html) ---
+
+        function luckScore(luck) {
+            if (luck === "大吉") return 5;
+            if (luck === "吉") return 4;
+            if (luck === "半吉") return 3;
+            if (luck === "凶") return 2;
+            return 1; // 大凶
+        }
+
+        function getSancaiScore(tE, rE, dE) {
+            const tr = getRelation(tE, rE);
+            const rd = getRelation(rE, dE);
+            const map = { "相生": 5, "比和": 4, "中性": 3, "相剋": 1 };
+            return map[tr] + map[rd];
+        }
+
+        function buildLifeExplain(main) {
+            const { Rluck, Zluck, Dluck, Wluck, tE, rE, dE, sancaiScore } = main;
+
+            // 性格
+            let personality = [];
+            if (["大吉", "吉"].includes(Rluck)) {
+                personality.push("人格偏吉：做事較有主見、推進力與責任感，遇到機會較敢承擔。");
+            } else if (Rluck === "半吉") {
+                personality.push("人格半吉：能力不差，但節奏與情緒容易受環境影響；越制度化越順。");
+            } else {
+                personality.push("人格偏凶：內在壓力感較強，容易一肩扛到底；需要學會分工與止損。");
+            }
+
+            const tr = getRelation(tE, rE);
+            const rd = getRelation(rE, dE);
+            personality.push(`三才關係：天→人為「${tr}」，人→地為「${rd}」。${(tr === "相剋" || rd === "相剋") ? "建議避免硬衝、用流程與夥伴補足。" : "多能形成順推循環，做長線更穩。"}`);
+
+            // 事業
+            let career = [];
+            if (["大吉", "吉"].includes(Rluck) && ["大吉", "吉"].includes(Zluck)) {
+                career.push("事業走勢：主運與總運皆偏順，適合設定明確目標、持續擴張影響力。");
+            } else if (["凶", "大凶"].includes(Zluck)) {
+                career.push("事業走勢：總運波動偏大，建議採「穩健現金流 + 分散風險」策略，避免一次押注。");
+            } else {
+                career.push("事業走勢：有機會，但需要靠定位、紀律與資源整合來放大成果。");
+            }
+
+            // 財運
+            let money = [];
+            if (["大吉", "吉"].includes(Zluck) || ["大吉", "吉"].includes(Dluck)) {
+                money.push("財運：有累積條件，適合長期投資/技能複利；重點是「持續與紀律」。");
+            } else {
+                money.push("財運：起伏較大，容易有計畫趕不上變化；建議先把預備金、保險與固定儲蓄打穩。");
+            }
+
+            // 感情
+            let love = [];
+            if (["大吉", "吉"].includes(Wluck) && ["大吉", "吉"].includes(Dluck)) {
+                love.push("感情：人際互動與內在需求較能對齊，關係容易越走越穩。");
+            } else if (["凶", "大凶"].includes(Wluck)) {
+                love.push("感情：人際運較容易誤會或摩擦，建議練習清楚表達、減少冷處理。");
+            } else {
+                love.push("感情：需要時間培養安全感；「規律溝通」比浪漫更重要。");
+            }
+
+            // 改名
+            let rename = [];
+            const highRisk = (["凶", "大凶"].includes(Rluck) || ["凶", "大凶"].includes(Zluck) || sancaiScore <= 4);
+            if (highRisk) {
+                rename.push("改名建議：可考慮優化。優先把「人格、總格」調到吉或半吉，並讓三才至少一段相生/比和。");
+                rename.push("方向：改動名的筆畫通常最有效（尤其名第一字影響人格）。也可用五行尾數調整（讓天→人、人→地避免相剋）。");
+            } else {
+                rename.push("改名建議：整體結構不差，通常不必為了『追求滿分』而大改；若要微調，可針對你想加強的面向做小幅優化。");
+            }
+
+            return `
+                <div class="mb-3"><div class="analysis-section-title">性格解析</div><div class="analysis-content">${personality.join(" ")}</div></div>
+                <div class="mb-3"><div class="analysis-section-title">事業走向</div><div class="analysis-content">${career.join(" ")}</div></div>
+                <div class="mb-3"><div class="analysis-section-title">財運走向</div><div class="analysis-content">${money.join(" ")}</div></div>
+                <div class="mb-3"><div class="analysis-section-title">感情走向</div><div class="analysis-content">${love.join(" ")}</div></div>
+                <div class="mb-0"><div class="analysis-section-title">適合改名與否</div><div class="analysis-content">${rename.join(" ")}</div></div>
+            `;
+        }
+
+        function renderWuxingBars(elements) {
+            const keys = ["木", "火", "土", "金", "水"];
+            const counts = keys.reduce((acc, k) => (acc[k] = 0, acc), {});
+            elements.forEach(e => counts[e]++);
+            const max = Math.max(...keys.map(k => counts[k]), 1);
+
+            let html = "";
+            keys.forEach(k => {
+                const pct = Math.round((counts[k] / max) * 100);
+                html += `
+                    <div class="progress-bar-container">
+                        <div class="d-flex justify-content-between small mb-1">
+                            <div><span class="fw-bold text-dark">${k}</span> <span class="text-muted ms-1">×${counts[k]}</span></div>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width:${pct}%; background-color: var(--${k === '木' ? 'wood' : k === '火' ? 'fire' : k === '土' ? 'earth' : k === '金' ? 'metal' : 'water'})"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            return html;
+        }
+
+        function renderScoreBadge(score, sancaiScore) {
+            let cls = "badge-score-ok", label = "整體偏吉", icon = "fa-smile";
+            if (score < 2.6) { cls = "badge-score-bad"; label = "整體偏凶"; icon = "fa-frown"; }
+            else if (score < 3.4) { cls = "badge-score-warn"; label = "整體起伏"; icon = "fa-meh"; }
+
+            let sancaiLabel = "三才順";
+            if (sancaiScore <= 4) sancaiLabel = "三才偏剋";
+            else if (sancaiScore <= 6) sancaiLabel = "三才普通";
+
+            return `
+                <div class="d-flex w-100 justify-content-between align-items-center p-2 rounded ${cls} mb-2">
+                    <span class="fw-bold"><i class="fas ${icon} me-2"></i>${label}</span>
+                    <span class="fw-bold fs-5">${score.toFixed(1)} 分</span>
+                </div>
+                <div class="d-flex gap-2 justify-content-center">
+                   <span class="badge bg-light text-dark border">三才：${sancaiLabel}</span>
+                </div>
+            `;
+        }
+
+        // --- 4. Main Calculation ---
+
+        document.getElementById('nameForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            calculate();
+        });
+
+        function calculate() {
+            // 1. Get Values
+            const surname = document.getElementById('surname').value.trim();
+            const firstname = document.getElementById('firstname').value.trim();
+            
+            const s1 = parseInt(document.getElementById('surnameStroke1').value) || 1;
+            const s2Input = document.getElementById('surnameStroke2');
+            const s2Val = s2Input.value;
+            const s2 = (surname.length > 1) ? (parseInt(s2Val) || 1) : 0;
+            
+            const n1 = parseInt(document.getElementById('nameStroke1').value) || 1;
+            const n2Input = document.getElementById('nameStroke2');
+            const n2Val = n2Input.value;
+            const n2 = (firstname.length > 1) ? (parseInt(n2Val) || 1) : 0;
+
+            const isSingleSurname = surname.length <= 1;
+            const isSingleName = firstname.length <= 1;
+
+            // 2. Stroke Breakdown
+            const breakdownHtml = `
+                <div class="char-box">
+                    <div class="char-text">${surname[0] || '?'}</div>
+                    <div class="stroke-text">${s1}畫</div>
+                </div>
+                ${!isSingleSurname ? `
+                <div class="char-box">
+                    <div class="char-text">${surname[1] || '?'}</div>
+                    <div class="stroke-text">${s2 || '?'}畫</div>
+                </div>` : ''}
+                <span class="text-muted mx-2">|</span>
+                <div class="char-box">
+                    <div class="char-text">${firstname[0] || '?'}</div>
+                    <div class="stroke-text">${n1}畫</div>
+                </div>
+                ${!isSingleName ? `
+                <div class="char-box">
+                    <div class="char-text">${firstname[1] || '?'}</div>
+                    <div class="stroke-text">${n2 || '?'}畫</div>
+                </div>` : ''}
+            `;
+            document.getElementById('strokeBreakdownContent').innerHTML = breakdownHtml;
+
+            // 3. Calculate Five Grids (Adopting name-fortune.html logic specifically for Tian Ge)
+            // Logic: Tian is always SurnameTotal + 1 (S_total + 1)
+            const S_total = isSingleSurname ? s1 : (s1 + s2);
+            let tian = S_total + 1;
+
+            // Ren: Single surname (s1+n1), Compound (s2+n1)
+            let ren = 0;
+            if (isSingleSurname) {
+                ren = s1 + n1;
+            } else {
+                ren = s2 + n1;
+            }
+
+            // Di: Single name (n1+1), Double (n1+n2)
+            let di = isSingleName ? (n1 + 1) : (n1 + n2);
+
+            // Zong: Sum of all
+            let zong = s1 + s2 + n1 + n2;
+
+            // Wai: 
+            let wai = 0;
+            if (isSingleSurname && isSingleName) wai = 2;
+            else if (isSingleSurname && !isSingleName) wai = n2 + 1;
+            else if (!isSingleSurname && isSingleName) wai = s1 + 1;
+            else wai = s1 + n2; 
+            
+            // 4. Update UI
+            updateGrid('tian', tian);
+            updateGrid('ren', ren);
+            updateGrid('di', di);
+            updateGrid('wai', wai);
+            updateGrid('zong', zong);
+
+            // 5. San Cai Visuals
+            renderSanCai(tian, ren, di);
+
+            // 6. Deep Analysis & Wuxing Bars
+            const tE = getWuXing(tian).ele;
+            const rE = getWuXing(ren).ele;
+            const dE = getWuXing(di).ele;
+            const wE = getWuXing(wai).ele;
+            const zE = getWuXing(zong).ele;
+
+            const Tluck = getLuckData(tian).luck;
+            const Rluck = getLuckData(ren).luck;
+            const Dluck = getLuckData(di).luck;
+            const Wluck = getLuckData(wai).luck;
+            const Zluck = getLuckData(zong).luck;
+
+            const avgScore = (luckScore(Tluck)+luckScore(Rluck)+luckScore(Dluck)+luckScore(Wluck)+luckScore(Zluck))/5;
+            const scScore = getSancaiScore(tE, rE, dE);
+
+            // Render Score
+            document.getElementById('scoreBadge').innerHTML = renderScoreBadge(avgScore, scScore);
+
+            // Render Bars
+            document.getElementById('wuxingBars').innerHTML = renderWuxingBars([tE, rE, dE, wE, zE]);
+
+            // Render Life Explain
+            const mainData = { Rluck, Zluck, Dluck, Wluck, tE, rE, dE, sancaiScore: scScore };
+            document.getElementById('lifeExplain').innerHTML = buildLifeExplain(mainData);
+
+            // Show Result Section
+            const res = document.getElementById('resultSection');
+            res.style.display = 'block';
+            res.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function updateGrid(prefix, num) {
+            const data = getLuckData(num);
+            const wuxing = getWuXing(num);
+            
+            document.getElementById(`${prefix}GeNum`).innerText = num;
+            document.getElementById(`${prefix}GeResult`).innerHTML = `<span class="luck-badge luck-${data.luck}">${data.luck}</span>`;
+            document.getElementById(`${prefix}GeNote`).innerText = data.note;
+            document.getElementById(`${prefix}GeWuXing`).innerHTML = `五行屬<span class="wuxing-${wuxing.ele}">${wuxing.ele}</span>`;
+        }
+
+        function renderSanCai(t, r, d) {
+            const tEle = getWuXing(t);
+            const rEle = getWuXing(r);
+            const dEle = getWuXing(d);
+
+            const trRel = getRelation(tEle.ele, rEle.ele);
+            const rdRel = getRelation(rEle.ele, dEle.ele);
+
+            const container = document.getElementById('sancaiContainer');
+            container.innerHTML = `
+                <div class="sancai-node" style="background:${tEle.color}">天</div>
+                <div class="sancai-arrow">↓ <small class="text-muted" style="font-size:0.8rem">${trRel}</small></div>
+                <div class="sancai-node" style="background:${rEle.color}; width:80px; height:80px; font-size:2rem; border:4px solid var(--gold);">人</div>
+                <div class="sancai-arrow">↓ <small class="text-muted" style="font-size:0.8rem">${rdRel}</small></div>
+                <div class="sancai-node" style="background:${dEle.color}">地</div>
+            `;
+
+            let desc = `您的三才配置為【${tEle.ele}、${rEle.ele}、${dEle.ele}】。`;
+            if (trRel.includes("剋") || rdRel.includes("剋")) {
+                desc += " 配置中含有相剋關係，人生過程可能較多磨練，需注意人和與健康。";
+            } else {
+                desc += " 配置相生或比旺，基礎穩固，易得長輩提攜與部屬支持，運勢順遂。";
+            }
+            document.getElementById('sancaiDesc').innerText = desc;
+        }
+    </script>
+</body>
+</html>
