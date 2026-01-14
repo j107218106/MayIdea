@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MayIdea 生命靈數占卜</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">  
+    <style>
+        :root {
+            --primary-color: #6a11cb;
+            --secondary-color: #2575fc;
+            --accent-color: #ffd700;
+            --bg-dark: #1a1a2e;
+            --card-bg: rgba(255, 255, 255, 0.95);
+        }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark), #16213e);
+            min-height: 100vh;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-section {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            border-radius: 0 0 20px 20px;
+        }
+
+        .input-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border: none;
+            transition: transform 0.3s ease;
+        }
+
+        .result-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            border-left: 5px solid var(--primary-color);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .result-card.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .number-badge {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(106, 17, 203, 0.4);
+        }
+
+        /* 9-Grid Styling */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            max-width: 300px;
+            margin: 0 auto;
+            background: #f0f2f5;
+            padding: 15px;
+            border-radius: 15px;
+        }
+
+        .grid-item {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-radius: 10px;
+            background: #e0e0e0;
+            color: #aaa;
+            position: relative;
+        }
+
+        .grid-item.active {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .grid-item .count-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--accent-color);
+            color: #333;
+            font-size: 0.7rem;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .line-tag {
+            background-color: #e3f2fd;
+            color: #0d47a1;
+            border-radius: 20px;
+            padding: 5px 15px;
+            margin: 5px;
+            display: inline-block;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .missing-tag {
+            background-color: #ffebee;
+            color: #c62828;
+            border-radius: 20px;
+            padding: 5px 15px;
+            margin: 5px;
+            display: inline-block;
+            font-size: 0.9rem;
+        }
+
+        .lucky-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            margin: 3px;
+            font-size: 0.9rem;
+            color: #495057;
+        }
+
+        .btn-predict {
+            background: linear-gradient(to right, #FF512F, #DD2476);
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            transition: transform 0.2s;
+        }
+
+        .btn-predict:hover {
+            transform: scale(1.05);
+            color: white;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .year-highlight {
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .main-wrapper {
+            flex: 1;
+        }
+
+        footer {
+            margin-top: auto;
+            background: rgba(0, 0, 0, 0.5);
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-wrapper">
+    <!-- Header -->
+    <div class="header-section text-center">
+        <div class="container">
+            <h1 class="mb-2">✨ MayIdea 生命靈數占卜 ✨</h1>
+            <p class="lead mb-0">探索你的天賦密碼與流年運勢</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Input Form -->
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card input-card p-4 mb-5">
+                    <form id="numerologyForm">
+                        <div class="mb-4">
+                            <label for="birthDate" class="form-label fw-bold">📅 請輸入西元出生年月日</label>
+                            <input type="date" class="form-control form-control-lg" id="birthDate" required>
+                            <div class="form-text">我們將依此計算您的命數與天賦結構。</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="flowYear" class="form-label fw-bold">🔮 選擇想預測的流年</label>
+                            <select class="form-select form-select-lg" id="flowYear">
+                                <!-- Generated by JS -->
+                            </select>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-predict text-white">
+                                開始分析
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section (Hidden by default) -->
+        <div id="resultSection" style="display: none;">
+            
+            <!-- 1. Core Personality (Life Path) -->
+            <div class="row justify-content-center">
+                <div class="col-md-10">
+                    <div class="card result-card p-4 show-on-scroll">
+                        <!-- <div class="d-flex align-items-center mb-3">
+                            <div class="number-badge me-3" id="lifePathNumber">?</div>
+                            <div>
+                                <h3 class="card-title mb-0">核心性格（命數）</h3>
+                                <small class="text-muted">你的靈魂本質與人生主要課題</small>
+                            </div>
+                        </div> -->
+                        <div class="d-flex align-items-center mb-3">
+                                <div class="number-badge me-3" id="lifePathNumber">?</div>
+                                <div class="flex-grow-1">
+                                    <h3 class="card-title mb-0">核心性格（命數）</h3>
+                                    <small class="text-muted">你的靈魂本質與人生主要課題</small>
+                                </div>
+                                <div class="text-end ms-3">
+                                    <i id="zodiacIcon" style="font-size: 2rem;"></i>
+                                    <div><small id="zodiac" class="text-muted"></small></div>
+                                </div>
+                            </div>
+                        <hr>
+                        <div id="lifePathDescription"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                <!-- 2. Grid Visualization & Talents -->
+                <div class="col-md-5">
+                    <div class="card result-card p-4 h-100 show-on-scroll">
+                        <h4 class="card-title mb-3 text-center">命盤九宮格</h4>
+                        <div class="grid-container" id="gridContainer">
+                            <!-- 1-9 Grid Items -->
+                            <div class="grid-item" id="cell-1">1</div>
+                            <div class="grid-item" id="cell-2">2</div>
+                            <div class="grid-item" id="cell-3">3</div>
+                            <div class="grid-item" id="cell-4">4</div>
+                            <div class="grid-item" id="cell-5">5</div>
+                            <div class="grid-item" id="cell-6">6</div>
+                            <div class="grid-item" id="cell-7">7</div>
+                            <div class="grid-item" id="cell-8">8</div>
+                            <div class="grid-item" id="cell-9">9</div>
+                        </div>
+                        <div class="mt-4">
+                            <h5 class="fw-bold text-primary">天賦連線優勢：</h5>
+                            <div id="linesContainer">
+                                <!-- Lines tags will go here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Missing Numbers -->
+                <div class="col-md-5">
+                    <div class="card result-card p-4 h-100 show-on-scroll">
+                        <h4 class="card-title mb-3">⚠️ 需要注意的課題（缺數）</h4>
+                        <p class="text-muted">這些數字的缺失代表您此生需要刻意修練或尋找互補夥伴的領域。</p>
+                        <div id="missingContainer">
+                            <!-- Missing number content -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Personal Year Prediction -->
+            <div class="row justify-content-center mt-3">
+                <div class="col-md-10">
+                    <div class="card result-card p-4 show-on-scroll" style="border-left-color: var(--accent-color);">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="number-badge me-3" style="background: var(--accent-color); color: #333;" id="personalYearNumber">?</div>
+                            <div>
+                                <h3 class="card-title mb-0"><span id="displayYear" class="year-highlight"></span> 年流年運勢</h3>
+                                <small class="text-muted">當下環境能量與行動建議</small>
+                            </div>
+                        </div>
+                        <hr>
+                        <div id="personalYearDescription"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    </div>
+
+    <footer class="text-center p-4 text-sm">
+         <p>© 2026 MayIdea 生命靈數占卜 v20260114 | 僅供娛樂與心靈參考</p>        
+    </footer>
+    <script>        
+
+        // --- Data Definitions ---
+
+        const numberMeanings = {
+            1: { title: "開創與領導", desc: "你是天生的領袖，擁有強大的獨立性與創造力。你不喜歡依賴他人，喜歡自己做決定。優點是自信、積極；缺點是可能過於自我中心或孤僻。" },
+            2: { title: "溝通與協調", desc: "你是優秀的合作者，心思細膩，重視細節與人際關係的平衡。你擁有很強的分析力與雙重性格的特質。優點是溫和、配合度高；缺點是容易依賴、優柔寡斷。" },
+            3: { title: "創意與表達", desc: "你是快樂的藝術家，擁有源源不絕的創意與適應力。你喜歡變化，不喜歡一成不變的生活。優點是樂觀、溝通能力強；缺點是任性、容易情緒化。" },
+            4: { title: "穩定與秩序", desc: "你是穩健的建設者，極度重視安全感與秩序。你做事按部就班，是值得信賴的夥伴。優點是務實、堅持；缺點是固執、缺乏彈性。" },
+            5: { title: "自由與冒險", desc: "你是自由的靈魂，熱愛冒險與挑戰。你擁有極強的口才與行銷魅力，無法忍受束縛。優點是多才多藝、適應力強；缺點是博而不精、易衝動。" },
+            6: { title: "關懷與責任", desc: "你是愛的療癒者，將照顧他人視為己任。你擁有很強的責任感與審美觀。優點是體貼、無私；缺點是容易挑剔、因為過度付出而感到委屈。" },
+            7: { title: "真理與分析", desc: "你是理性的思想家，喜歡探究事物的本質。你天生帶有幸運的特質，直覺敏銳。優點是邏輯強、好學；缺點是孤僻、多疑、愛鑽牛角尖。" },
+            8: { title: "權力與富足", desc: "你是天生的實業家，對金錢與權力有敏銳的嗅覺。你誠實且有野心，擅長掌控大局。優點是執行力強、有商業頭腦；缺點是獨裁、唯利是圖。" },
+            9: { title: "智慧與奉獻", desc: "你是夢想家與人道主義者，擁有服務大眾的精神。你的能量場很強，能吸引各種資源。優點是博愛、想像力豐富；缺點是不切實際、空想、漫不經心。" }
+        };
+
+        const luckyData = {
+            1: { color: "紅色／黑色", crystals: "茶水晶、石榴石、紅瑪瑙、黑曜石、虎眼石" },
+            2: { color: "橙色", crystals: "黃水晶、太陽石、琥珀、透石膏、珍珠" },
+            3: { color: "黃色", crystals: "黃水晶、金髮晶、虎眼石、黃銅、琥珀" },
+            4: { color: "綠色／粉色", crystals: "綠東陵、橄欖石、葡萄石、粉水晶、草莓晶" },
+            5: { color: "藍色", crystals: "海藍寶、天河石、藍紋瑪瑙、藍晶石、鷹眼石" },
+            6: { color: "靛藍色", crystals: "海藍寶、青金石、紫水晶、天青石、鷹眼石" },
+            7: { color: "紫色／白色", crystals: "白水晶、蛋白石、透石膏、紫水晶、拉長石" },
+            8: { color: "金色／紫紅色", crystals: "白水晶、粉水晶、黃水晶、鑽石" },
+            9: { color: "珍珠白／無色", crystals: "珍珠、白水晶、透石膏、月光石" }
+        };
+
+        const missingMeanings_old = {
+            1: "缺乏獨立性，容易沒主見，需要培養自信與決斷力。",
+            2: "較不重細節，或個性較剛硬，需要學習換位思考與配合他人。",
+            3: "表達能力較弱，或容易過於嚴肅，需要學習放鬆與展現創意。",
+            4: "缺乏安全感，容易對未來感到焦慮，需要學習建立內在的秩序與積蓄。",
+            5: "害怕改變，生活較規律但也較沉悶，需要學習突破框架與冒險。",
+            6: "對人較冷漠，或不願承擔責任，需要學習付出關懷與接受他人的愛。",
+            7: "懶得思考或容易輕信他人，需要學習獨立思考與質疑精神。",
+            8: "金錢觀念較弱，或缺乏野心，需要學習理財與設定實際目標。",
+            9: "缺乏想像力，過於現實，需要學習關懷社會與設定遠大夢想。"
+        };
+
+        const missingMeanings = {
+            1: {
+                title: "1 代表開創與領導能量",
+                desc: "缺乏獨立性，容易沒主見，需要培養自信與決斷力。",
+                suggest: "建議：試著自己做決定，培養獨立性。"
+            },
+            2: {
+                title: "2 代表溫柔協調",
+                desc: "較不重細節，或個性較剛硬，需要學習換位思考與配合他人。",
+                suggest: "建議：學習換位思考，多聽別人說話。"
+            },
+            3: {
+                title: "3 代表創意與表達",
+                desc: "表達能力較弱，或容易過於嚴肅，需要學習放鬆與展現創意。",
+                suggest: "建議：學習放鬆，嘗試透過藝術或寫作表達。"
+            },
+            4: {
+                title: "4 代表務實與穩定",
+                desc: "缺乏安全感，容易對未來感到焦慮，需要學習建立內在的秩序與積蓄。",
+                suggest: "建議：記帳、規律運動，建立生活秩序。"
+            },
+            5: {
+                title: "5 代表自由與冒險",
+                desc: "害怕改變，生活較規律但也較沉悶，需要學習突破框架與冒險。",
+                suggest: "建議：嘗試新事物，跳出舒適圈。"
+            },
+            6: {
+                title: "6 代表愛與責任",
+                desc: "對人較冷漠，或不願承擔責任，需要學習付出關懷與接受他人的愛。",
+                suggest: "建議：多關心家人朋友，參與志工服務。"
+            },
+            7: {
+                title: "7 代表內省智慧",
+                desc: "懶得思考或容易輕信他人，需要學習獨立思考與質疑精神。",
+                suggest: "建議：多閱讀，培養獨立思考能力。"
+            },
+            8: {
+                title: "8 代表權能與豐盛",
+                desc: "金錢觀念較弱，或缺乏野心，需要學習理財與設定實際目標。",
+                suggest: "建議：學習理財，設定具體事業目標。"
+            },
+            9: {
+                title: "9 代表博愛與大局觀",
+                desc: "缺乏想像力，過於現實，需要學習關懷社會與設定遠大夢想。",
+                suggest: "建議：多接觸大自然，關懷社會議題。"
+            }
+        };
+
+
+        const lineDefinitions = [
+            { nums: [1, 2, 3], name: "藝術線／美感線", desc: "審美高、直覺強、喜歡嘗試新事物。對美感高度敏銳，勇於創新與嘗試，擅長融合不同靈感。適合從事藝術或設計相關工作。" },
+            { nums: [4, 5, 6], name: "組織線／完美主義線", desc: "解決問題快、品質意識強。邏輯清晰、效率高，兼顧創新與人性，是團隊的品質把關者。適合管理與行政工作。" },
+            { nums: [7, 8, 9], name: "權力線／貴人線", desc: "魅力高、人際資源豐沛、事業易獲助力。善於運用資源與人脈，具策略眼光，容易吸引貴人協助。有成為大老闆的潛力。" },
+            { nums: [1, 4, 7], name: "務實線／執行力線", desc: "扎實執行、目標導向、不畏艱難。行動力強、規畫力佳，懂得實際付出才能達成目標。適合擔任執行者或團隊支柱。" },
+            { nums: [2, 5, 8], name: "情感線／心智力線", desc: "情感真摯、能量充沛、影響力高。勇於表達、善社交，具備感受力與爆發力，適合公關、演說、藝術創作等溝通職務，演藝人員常有此線。" },
+            { nums: [3, 6, 9], name: "智慧線／創意線", desc: "聰明、反應快、思考邏輯清晰，創意豐富、學習力強、善於多角度觀察。適合動腦的工作，顧問與講授角色。" },
+            { nums: [1, 5, 9], name: "工作線／事業線", desc: "企圖心強，對喜愛的事全力投入，適合創業或領導專案。熱情與執行力兼具，為了目標會不斷努力（工作狂）。" },
+            { nums: [3, 5, 7], name: "人緣線／溝通線", desc: "人際關係好，說話有魅力、口才佳，能快速建立信任。適合公關或業務。" }
+        ];
+
+        
+        const personalYearAdvice = {
+            1: { keyword: "播種期", text: "這是新的開始，適合設定新目標、創業、換工作。即使感到孤獨，也要勇敢向前衝，現在種下的種子未來九年都會有影響。" },
+            2: { keyword: "蟄伏期", text: "腳步放慢，著重於合作與細節。這一年適合進修、建立人脈、整理內部，不宜有太大的變動，以靜制動。" },
+            3: { keyword: "萌芽期", text: "充滿創意與社交活動的一年。運勢回升，適合展現自己、旅行、學習新才藝。但要注意情緒控管與金錢花費。" },
+            4: { keyword: "深耕期", text: "需要務實與努力的一年。建立秩序、鞏固基礎、整頓家庭與財務。雖然感覺比較辛苦，但這是為了長遠的安穩。" },
+            5: { keyword: "變動期", text: "轉捩點，充滿變化與機會。適合冒險、搬家、換跑道。心態要保持開放，不要抗拒改變，順勢而為。" },
+            6: { keyword: "關懷期", text: "重心回歸家庭與責任。這一年會有許多關於「愛」的課題，適合結婚、生子、照顧家人。雖然忙碌，但心靈滿足。" },
+            7: { keyword: "反思期", text: "適合獨處、思考、進修的一年。運勢較為內斂，不適合過度擴張。多讀書、研究、尋找心靈的平靜。" },
+            8: { keyword: "收穫期", text: "過去七年的努力在今年開花結果。金錢與事業運勢強，有升官發財的機會。但也需要承擔更大的壓力與責任。" },
+            9: { keyword: "總結期", text: "斷捨離的一年。適合結束舊的關係、習慣或工作，為下一個循環做準備。不要強求新的開始，而是要放手與清理。" }
+        };
+
+        // --- Initialization ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentYear = 2026;
+            const select = document.getElementById('flowYear');
+            
+            // Generate Year Options: -3 to +6 years from current
+            for (let i = -3; i <= 6; i++) {
+                const year = currentYear + i;
+                const option = document.createElement('option');
+                option.value = year;
+                option.text = `${year}年 ${year === currentYear ? '(今年)' : ''}`;
+                if (year === currentYear) option.selected = true;
+                select.appendChild(option);
+            }
+
+            // Form Submit Handler
+            document.getElementById('numerologyForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const dateVal = document.getElementById('birthDate').value;
+                const flowYearVal = parseInt(document.getElementById('flowYear').value);
+                
+                if (!dateVal) return;
+                
+                performDivination(dateVal, flowYearVal);
+                
+                // Show results with animation
+                const resultSection = document.getElementById('resultSection');
+                resultSection.style.display = 'block';
+                
+                // Trigger reflow for animation
+                setTimeout(() => {
+                    document.querySelectorAll('.result-card').forEach((card, index) => {
+                        setTimeout(() => card.classList.add('show'), index * 200);
+                    });
+                }, 50);
+
+                // Scroll to results
+                resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        // --- Core Logic ---
+
+        function sumDigits(num) {
+            // Recursively sum digits until single digit (1-9)
+            let sum = 0;
+            while (num > 0 || sum > 9) {
+                if (num === 0) {
+                    num = sum;
+                    sum = 0;
+                }
+                sum += num % 10;
+                num = Math.floor(num / 10);
+            }
+            return sum === 0 ? 0 : sum; // Should return 1-9
+        }
+
+        function getDigitsArray(str) {
+            return str.replace(/\D/g, '').split('').map(Number);
+        }
+
+        function performDivination(dateStr, flowYear) {
+            const dateObj = new Date(dateStr);
+            const y = dateObj.getFullYear();
+            const m = dateObj.getMonth() + 1;
+            const d = dateObj.getDate();
+
+            const zodiac = getZodiac(m, d); // 取得星座     
+            document.getElementById('zodiac').textContent = zodiac.name;
+            const iconEl = document.getElementById('zodiacIcon');
+            iconEl.className = `fa-solid ${zodiac.icon}`;
+
+            // 1. Calculate Life Path Number (命數)
+            // Method: Sum all parts. Example: 1985 + 10 + 20 = 2015 -> 2+0+1+5=8
+            // Alternative accurate method: Sum year, sum month, sum day, then sum results.
+            // Using standard summation string:
+            const totalStr = `${y}${m}${d}`;
+            const lifePath = sumDigits(parseInt(totalStr));
+
+            // 2. Identify Inborn Numbers (Birth Chart)
+            const birthDigits = getDigitsArray(`${y}${m}${d}`);
+            const counts = {};
+            for (let i = 1; i <= 9; i++) counts[i] = 0;
+            
+            birthDigits.forEach(n => {
+                if (n >= 1 && n <= 9) counts[n]++;
+            });
+
+            // 3. Identify Missing Numbers
+            const missing = [];
+            for (let i = 1; i <= 9; i++) {
+                if (counts[i] === 0) missing.push(i);
+            }
+
+            // 4. Calculate Personal Year
+            const personalYearNum = sumDigits(m + d + sumDigits(flowYear)); // Month + Day + Universal Year
+
+            // --- Rendering ---
+
+            // Render Life Path and Lucky Elements
+            document.getElementById('lifePathNumber').textContent = lifePath;
+            const luck = luckyData[lifePath];
+            
+            // Format crystals string into array for badges
+            const crystalList = luck.crystals.split('、');
+            const crystalHtml = crystalList.map(c => `<span class="lucky-badge">${c}</span>`).join('');
+
+            document.getElementById('lifePathDescription').innerHTML = `
+                <h5 class="fw-bold text-primary">${numberMeanings[lifePath].title}</h5>
+                <p>${numberMeanings[lifePath].desc}</p>
+                <div class="mt-4 p-3 rounded" style="background-color: #f8f0fc; border: 1px dashed var(--primary-color);">
+                    <h6 class="fw-bold text-dark mb-2">🍀 幸運色與能量晶石</h6>
+                    <div class="mb-2"><strong>幸運色：</strong> ${luck.color}</div>
+                    <div><strong>推薦配戴：</strong><br>${crystalHtml}</div>
+                </div>
+            `;
+
+            // Render Grid
+            for (let i = 1; i <= 9; i++) {
+                const cell = document.getElementById(`cell-${i}`);
+                // Clear previous
+                cell.className = 'grid-item'; 
+                cell.innerHTML = `${i}`;
+
+                if (counts[i] > 0) {
+                    cell.classList.add('active');
+                    // Add count badge if > 1 (Optional, but good detail)
+                    /* if (counts[i] > 1) {
+                        cell.innerHTML += `<div class="count-badge">${counts[i]}</div>`;
+                    }
+                    */
+                   // For Pythagorean grid, we usually just circle them. Here highlighting is enough.
+                }
+            }
+
+            // Render Lines
+            const linesContainer = document.getElementById('linesContainer');
+            linesContainer.innerHTML = '';
+            let hasLines = false;
+            
+            lineDefinitions.forEach(line => {
+                // Check if user has all numbers in this line
+                const hasAll = line.nums.every(n => counts[n] > 0);
+                if (hasAll) {
+                    hasLines = true;
+                    linesContainer.innerHTML += `
+                        <div class="mb-2">
+                            <span class="line-tag">★ ${line.name} (${line.nums.join('-')})</span>
+                            <small class="d-block text-muted ms-2">${line.desc}</small>
+                        </div>
+                    `;
+                }
+            });
+            if (!hasLines) linesContainer.innerHTML = '<small class="text-muted">目前命盤中沒有形成主要連線，代表您的能量較為分散，但也意味著不受特定框架限制，發展潛力多元。</small>';
+
+            // Render Missing Numbers
+            const missingContainer = document.getElementById('missingContainer');
+            missingContainer.innerHTML = '';
+            if (missing.length === 0) {
+                missingContainer.innerHTML = '<p class="text-success">恭喜！您的命盤數字齊全，天賦資源非常豐富。</p>';
+            } else {
+                /* missing.forEach(num => {
+                    missingContainer.innerHTML += `
+                        <div class="mb-3">
+                            <span class="missing-tag">缺數 ${num}</span>
+                            <span class="fw-bold small ms-1">${missingMeanings[num].split('，')[0]}...</span>
+                            <p class="small text-muted mb-0 mt-1 ps-2 border-start border-3">${missingMeanings[num]}</p>
+                        </div>
+                    `;
+                }); */
+                missing.forEach(num => {
+                    const item = missingMeanings[num];
+                    missingContainer.innerHTML += `
+                        <div class="mb-3">
+                        <span class="missing-tag">缺數 ${num}</span>
+                        <span class="fw-bold small ms-1">${item.title}</span>
+                        <p class="small text-muted mb-0 mt-1 ps-2 border-start border-3">
+                            ${item.desc}<br>
+                            ${item.suggest}
+                        </p>
+                        </div>
+                    `;
+                });
+
+            }
+
+            // Render Personal Year
+            document.getElementById('personalYearNumber').textContent = personalYearNum;
+            document.getElementById('displayYear').textContent = flowYear;
+            const pyData = personalYearAdvice[personalYearNum];
+            document.getElementById('personalYearDescription').innerHTML = `
+                <h4 class="fw-bold text-warning mb-3">【${pyData.keyword}】</h4>
+                <p class="lead" style="font-size: 1.1rem;">${pyData.text}</p>
+                <div class="alert alert-light mt-3 border">
+                    <strong>💡 建議行動：</strong> 
+                    ${getActionAdvice(personalYearNum)}
+                </div>
+            `;
+        }
+
+        function getActionAdvice(num) {
+            const actions = {
+                1: "主動爭取機會，嘗試新的計畫，不要依賴他人。",
+                2: "多傾聽，多配合，尋找合作夥伴，避免正面衝突。",
+                3: "參加聚會，發表作品，改變造型，讓自己開心。",
+                4: "記帳，整理家務，考取證照，規律運動。",
+                5: "出國旅行，學習新語言，拓展業務，廣結善緣。",
+                6: "陪伴家人，解決感情問題，佈置居家環境。",
+                7: "閱讀心靈書籍，冥想，獨自旅行，鑽研專業技術。",
+                8: "擴大投資（需謹慎），爭取升遷，創業規劃。",
+                9: "大掃除，捐贈舊物，原諒過去的人事物，休息。"
+            };
+            return actions[num];
+        }
+
+        
+
+        const zodiacRules = [
+            { name: "摩羯座", num: 1, icon: "fa-mountain", start: {m:12, d:22}, end: {m:1, d:19} },
+            { name: "水瓶座", num: 2, icon: "fa-water", start: {m:1, d:20}, end: {m:2, d:18} },
+            { name: "雙魚座", num: 3, icon: "fa-fish", start: {m:2, d:19}, end: {m:3, d:20} },
+            { name: "牡羊座", num: 1, icon: "fa-fire", start: {m:3, d:21}, end: {m:4, d:19} },
+            { name: "金牛座", num: 2, icon: "fa-bull", start: {m:4, d:20}, end: {m:5, d:20} },
+            { name: "雙子座", num: 3, icon: "fa-comments", start: {m:5, d:21}, end: {m:6, d:21} },
+            { name: "巨蟹座", num: 4, icon: "fa-moon", start: {m:6, d:22}, end: {m:7, d:22} },
+            { name: "獅子座", num: 5, icon: "fa-crown", start: {m:7, d:23}, end: {m:8, d:22} },
+            { name: "處女座", num: 6, icon: "fa-seedling", start: {m:8, d:23}, end: {m:9, d:22} },
+            { name: "天秤座", num: 7, icon: "fa-balance-scale", start: {m:9, d:23}, end: {m:10, d:23} },
+            { name: "天蠍座", num: 8, icon: "fa-scorpion", start: {m:10, d:24}, end: {m:11, d:22} },
+            { name: "射手座", num: 9, icon: "fa-bow-arrow", start: {m:11, d:23}, end: {m:12, d:21} },
+            { name: "摩羯座", num: 1, icon: "fa-mountain", start: {m:12, d:22}, end: {m:12, d:31} } // Handle end of year
+        ];
+        // 取得星座函式
+        function getZodiac(m, d) { 
+            for (let z of zodiacRules) {
+                if ((m === z.start.m && d >= z.start.d) || (m === z.end.m && d <= z.end.d)) {
+                    return z;
+                }
+            }
+            return zodiacRules[0];
+        }
+
+    </script>
+</body>
+</html>
